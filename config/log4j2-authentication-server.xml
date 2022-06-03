@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" packages="com.gemalto.rnd.logging.ulf.plugins">
+    <Properties>
+		<Property name="timezone">local</Property>
+        <Property name="httpRequestBodyAllowedLogLevels">none</Property>
+        <property name="basePath">./logs</property>
+        <property name="jsonBasePath">./jsonlogs</property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%green{%d{ISO8601}} %highlight{%-5level %logger{36} %C{1}.%M(%F:%L) %t %msg%n%throwable}{FATAL=red, ERROR=bright red, WARN=bright blue, INFO=bright black DEBUG=bright cyan, TRACE=bright magenta}"/>
+        </Console>
+		 <RollingFile name="jsonFile" append="true" fileName="${jsonBasePath}/authentication-server.log" filePattern="${jsonBasePath}/archived/authentication-server-%d{yyyy-MM-dd-hh-mm-ss}.log.gz">
+			<UnifiedLogFormatLayout enableOwaspEncoding="true"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10MB"/>
+				<CronTriggeringPolicy schedule="0 0 0 ? JAN,APR,JUL,OCT * *"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+			    <Delete basePath="${jsonBasePath}/archived" maxDepth="1">
+			      <IfLastModified age="365d" />
+			    </Delete>
+	 	    </DefaultRolloverStrategy>
+		</RollingFile>
+		<RollingFile name="jsonFileDebug" append="true" fileName="${jsonBasePath}/authentication-server-debug.log" filePattern="${jsonBasePath}/archived/authentication-server-debug-%d{yyyy-MM-dd-HH-mm}.log.gz">
+			<UnifiedLogFormatLayout enableOwaspEncoding="true"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="100MB"/>
+				<CronTriggeringPolicy schedule="0 0 0 ? JAN,APR,JUL,OCT * *"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+			    <Delete basePath="${jsonBasePath}/archived" maxDepth="1">
+			      <IfLastModified age="365d" />
+			    </Delete>
+	 	    </DefaultRolloverStrategy>
+	 	    <ThresholdFilter level="DEBUG" />
+		</RollingFile>
+		<RollingFile name="jsonFileTrace" append="true" fileName="${jsonBasePath}/authentication-server-trace.log" filePattern="${jsonBasePath}/archived/authentication-server-debug-%d{yyyy-MM-dd-HH-mm}.log.gz">
+			<UnifiedLogFormatLayout enableOwaspEncoding="true"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="100MB"/>
+				<CronTriggeringPolicy schedule="0 0 0 ? JAN,APR,JUL,OCT * *"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+			    <Delete basePath="${jsonBasePath}/archived" maxDepth="1">
+			      <IfLastModified age="365d" />
+			    </Delete>
+	 	    </DefaultRolloverStrategy>
+	 	    <ThresholdFilter level="TRACE" />
+		</RollingFile>
+		
+		
+		<!-- 		human log files -->
+		<RollingFile name="fileDebug" append="true" fileName="${basePath}/authentication-server-h-debug.log" filePattern="${basePath}/archived/authentication-server-h-debug-%d{yyyy-MM-dd-HH-mm}.log.gz">
+			<PatternLayout pattern="[%p] %d [%t] %x %c %M - %m%n"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="100MB"/>
+				<CronTriggeringPolicy schedule="0 0 0 ? JAN,APR,JUL,OCT * *"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+			    <Delete basePath="${basePath}/archived" maxDepth="1">
+			      <IfLastModified age="365d" />
+			    </Delete>
+	 	    </DefaultRolloverStrategy>
+	 	    <ThresholdFilter level="DEBUG" />
+		</RollingFile>
+    </Appenders>
+     <Loggers>
+	    <Logger name="com.gemalto" level="debug" additivity="false">
+	    	<AppenderRef ref="jsonFile" level="info" />
+	    	<AppenderRef ref="jsonFileDebug" level="debug" />
+<!-- 	    	<AppenderRef ref="jsonFileTrace" level="trace" /> -->
+			<AppenderRef ref="fileDebug" level="debug" />
+	    </Logger> 
+        <root level="info">
+        	<AppenderRef ref="jsonFile" level="debug"  />
+            <AppenderRef ref="console" level="debug"/>
+        </root>
+    </Loggers>
+</Configuration>
